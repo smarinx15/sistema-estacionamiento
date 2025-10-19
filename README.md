@@ -1,274 +1,283 @@
-# \# 🅿️ Sistema de Estacionamiento
+# 🚗 Sistema de Gestión de Estacionamiento
 
-# 
 
-# Sistema de gestión de estacionamiento desarrollado en Python que permite administrar el ingreso, salida y cobro de vehículos (automóviles, motocicletas y bicicletas), así como la gestión de mensualidades.
 
-# 
+![Python](https://img.shields.io/badge/python-3.8+-blue.svg)
+![FastAPI](https://img.shields.io/badge/FastAPI-0.100+-green.svg)
+![License](https://img.shields.io/badge/license-MIT-blue.svg)
 
-# \## 📋 Características
+API REST para la gestión integral de un sistema de estacionamiento, desarrollada con FastAPI y arquitectura moderna.
 
-# 
+---
 
-# \- \*\*Gestión de Tarifas\*\*: Configuración flexible de tarifas por minuto para cada tipo de vehículo
+## 📋 Descripción
 
-# \- \*\*Registro de Vehículos\*\*: 
+Sistema backend que permite administrar espacios de estacionamiento, registrar vehículos, controlar entradas/salidas y calcular tarifas. Ideal para estacionamientos comerciales, centros comerciales o edificios corporativos.
 
-# &nbsp; - Automóviles (formato: ABC123)
+---
 
-# &nbsp; - Motocicletas (formato: ABC12D)
+## ✨ Características
 
-# &nbsp; - Bicicletas (sistema de consecutivo automático)
+- 🚗 **Gestión de Vehículos**: CRUD completo de vehículos
+- 📍 **Control de Espacios**: Administración de plazas disponibles
+- ⏱️ **Registro de Entradas/Salidas**: Control de tiempo en tiempo real
+- 💰 **Cálculo de Tarifas**: Cálculo automático según tiempo de permanencia
+- 📊 **Reportes**: Estadísticas de ocupación y ganancias
+- 🔒 **Validación de Datos**: Validación con Pydantic
+- 📚 **Documentación Automática**: Swagger UI y ReDoc integrados
 
-# \- \*\*Sistema de Mensualidades\*\*: Control de mensualidades con vigencia de 30 días
+---
 
-# \- \*\*Cálculo Automático\*\*: Calcula tiempo de estadía y monto a cobrar
+## 🛠️ Tecnologías
 
-# \- \*\*Sistema de Facturación\*\*: Generación de facturas con número único
+- **FastAPI** - Framework web moderno y rápido
+- **Pydantic** - Validación de datos
+- **Uvicorn** - Servidor ASGI
+- **Python 3.8+** - Lenguaje de programación
 
-# \- \*\*Búsqueda Avanzada\*\*: Búsqueda por placa, consecutivo o número de factura
+---
 
-# \- \*\*Reportes\*\*: Visualización de registros por tipo de vehículo
+## 🚀 Instalación
 
-# \- \*\*Cuadre de Caja\*\*: Reporte consolidado de ingresos
+### Requisitos Previos
 
-# 
+- Python 3.8 o superior
+- pip
 
-# \## 🚀 Requisitos
+### Pasos
 
-# 
+1. **Clonar el repositorio**
+   ```bash
+   git clone https://github.com/smarinx15/estacionamiento.git
+   cd estacionamiento
+   ```
 
-# \- Python 3.6 o superior
+2. **Crear entorno virtual**
+   ```bash
+   python -m venv venv
+   
+   # Windows
+   venv\Scripts\activate
+   
+   # Linux/Mac
+   source venv/bin/activate
+   ```
 
-# \- No requiere librerías externas
+3. **Instalar dependencias**
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-# 
+4. **Ejecutar el servidor**
+   ```bash
+   uvicorn main:app --reload
+   ```
 
-# \## 💻 Instalación y Uso
+5. **Abrir en el navegador**
+   - API: `http://localhost:8000`
+   - Documentación: `http://localhost:8000/docs`
+   - ReDoc: `http://localhost:8000/redoc`
 
-# 
+---
 
-# 1\. Clona este repositorio:
+## 📡 API Endpoints
 
-# ```bash
+### Vehículos
+
+| Método | Endpoint | Descripción |
+|--------|----------|-------------|
+| `GET` | `/vehiculos` | Listar todos los vehículos |
+| `GET` | `/vehiculos/{id}` | Obtener vehículo por ID |
+| `POST` | `/vehiculos` | Registrar nuevo vehículo |
+| `PUT` | `/vehiculos/{id}` | Actualizar vehículo |
+| `DELETE` | `/vehiculos/{id}` | Eliminar vehículo |
 
-# git clone https://github.com/smarinx15/sistema-estacionamiento.git
+### Espacios
 
-# ```
+| Método | Endpoint | Descripción |
+|--------|----------|-------------|
+| `GET` | `/espacios` | Listar espacios disponibles |
+| `GET` | `/espacios/{id}` | Obtener espacio específico |
+| `POST` | `/espacios/{id}/ocupar` | Marcar espacio como ocupado |
+| `POST` | `/espacios/{id}/liberar` | Liberar espacio |
+
+### Tickets
+
+| Método | Endpoint | Descripción |
+|--------|----------|-------------|
+| `POST` | `/tickets/entrada` | Registrar entrada de vehículo |
+| `POST` | `/tickets/salida` | Registrar salida y calcular tarifa |
+| `GET` | `/tickets/{id}` | Consultar ticket |
+
+---
+
+## 💡 Ejemplos de Uso
+
+### Registrar Entrada de Vehículo
+
+```bash
+curl -X POST "http://localhost:8000/tickets/entrada" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "placa": "ABC123",
+    "tipo": "auto",
+    "espacio_id": 1
+  }'
+```
 
-# 
+**Respuesta:**
+```json
+{
+  "ticket_id": 1,
+  "placa": "ABC123",
+  "hora_entrada": "2025-01-15T10:30:00",
+  "espacio": 1,
+  "mensaje": "Vehículo registrado exitosamente"
+}
+```
 
-# 2\. Navega a la carpeta del proyecto:
+### Registrar Salida y Calcular Tarifa
 
-# ```bash
+```bash
+curl -X POST "http://localhost:8000/tickets/salida" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "ticket_id": 1
+  }'
+```
 
-# cd sistema-estacionamiento
+**Respuesta:**
+```json
+{
+  "ticket_id": 1,
+  "placa": "ABC123",
+  "hora_entrada": "2025-01-15T10:30:00",
+  "hora_salida": "2025-01-15T14:45:00",
+  "tiempo_total": "4h 15min",
+  "tarifa": 25000,
+  "mensaje": "Total a pagar: $25,000 COP"
+}
+```
 
-# ```
+---
 
-# 
+## 📸 Capturas de Pantalla
 
-# 3\. Ejecuta el programa:
+### Documentación Swagger
+![Swagger UI](screenshots/swagger.png)
 
-# ```bash
+### Endpoints Disponibles
+![Endpoints](screenshots/endpoints.png)
 
-# python ESTACIONAMIENTO-VERSIONFINAL.py
+---
 
-# ```
+## 🗂️ Estructura del Proyecto
 
-# 
+```
+estacionamiento/
+│
+├── main.py              # Punto de entrada de la aplicación
+├── models.py            # Modelos Pydantic
+├── database.py          # Configuración de base de datos
+├── routers/             # Endpoints organizados
+│   ├── vehiculos.py
+│   ├── espacios.py
+│   └── tickets.py
+├── requirements.txt     # Dependencias
+└── README.md           # Este archivo
+```
 
-# \## 📖 Guía de Uso
+---
 
-# 
+## ⚙️ Configuración
 
-# \### Menú Principal
+### Tarifas
 
-# 
+Puedes configurar las tarifas en `config.py`:
 
-# 1\. \*\*Tarifas\*\* - Configurar precios
+```python
+TARIFA_HORA = 5000  # COP por hora
+TARIFA_MINIMA = 3000  # COP mínimo
+TIEMPO_GRACIA = 15  # minutos sin cobro
+```
 
-# 2\. \*\*Registrar mensualidad\*\* - Registro de planes mensuales
+---
 
-# 3\. \*\*Ingresar vehículo\*\* - Registrar entrada
+## 🧪 Testing
 
-# 4\. \*\*Buscar vehículo\*\* - Búsqueda individual
+Para ejecutar las pruebas:
 
-# 5\. \*\*Mostrar registros\*\* - Ver todos los registros
+```bash
+pytest tests/
+```
 
-# 6\. \*\*Mostrar Mensualidades\*\* - Ver mensualidades activas
+---
 
-# 7\. \*\*Salida vehículo\*\* - Registrar salida y cobrar
+## 🚀 Despliegue
 
-# 8\. \*\*Buscar Factura\*\* - Consultar factura
+### Usando Docker
 
-# 9\. \*\*Cuadre de Caja\*\* - Reporte de ingresos
+```bash
+docker build -t estacionamiento-api .
+docker run -p 8000:8000 estacionamiento-api
+```
 
-# 10\. \*\*Salir\*\* - Cerrar sistema
+### En Render/Railway
 
-# 
+1. Conecta tu repositorio
+2. Configura el comando: `uvicorn main:app --host 0.0.0.0 --port $PORT`
+3. Deploy automático
 
-# \### Formatos Requeridos
+---
 
-# 
+## 🛣️ Roadmap
 
-# \- \*\*Placas de Automóvil\*\*: 3 letras + 3 números (Ejemplo: `ABC123`)
+- [ ] Integración con base de datos (PostgreSQL/MongoDB)
+- [ ] Sistema de autenticación (JWT)
+- [ ] Pasarela de pagos
+- [ ] Dashboard de administración
+- [ ] Notificaciones por email/SMS
+- [ ] App móvil para clientes
+- [ ] Sistema de reservas
+- [ ] Reportes en PDF
 
-# \- \*\*Placas de Motocicleta\*\*: 3 letras + 2 números + 1 letra (Ejemplo: `ABC12D`)
+---
 
-# \- \*\*Fecha\*\*: `ddmmyyyy` (Ejemplo: `17102025`)
+## 🤝 Contribuciones
 
-# \- \*\*Hora\*\*: `hhmm` formato 24 horas (Ejemplo: `1430` para 2:30 PM)
+Las contribuciones son bienvenidas. Por favor:
 
-# 
+1. Fork el proyecto
+2. Crea una rama (`git checkout -b feature/mejora`)
+3. Commit cambios (`git commit -m 'Add: nueva funcionalidad'`)
+4. Push (`git push origin feature/mejora`)
+5. Abre un Pull Request
 
-# \## 🎯 Ejemplo de Uso
+---
 
-# 
+## 📝 Licencia
 
-# ```
+Este proyecto está bajo la Licencia MIT.
 
-# 1\. Configure las tarifas en el menú Tarifas
+---
 
-# &nbsp;  - Automóvil: $50 por minuto
+## 👤 Autor
 
-# &nbsp;  - Moto: $30 por minuto
+**Santiago Marín**
+- GitHub: [@smarinx15](https://github.com/smarinx15)
 
-# &nbsp;  - Bicicleta: $20 por minuto
+---
 
-# &nbsp;  - Mensualidad: $100,000
+## 🙏 Agradecimientos
 
-# 
+- FastAPI por su increíble framework
+- La comunidad de Python
 
-# 2\. Ingrese un vehículo
+---
 
-# &nbsp;  - Tipo: Automóvil
+<div align="center">
 
-# &nbsp;  - Placa: ABC123
+**⭐ Si este proyecto te fue útil, considera darle una estrella ⭐**
 
-# &nbsp;  - Hora: 0900
 
-# &nbsp;  - Fecha: 17102025
-
-# 
-
-# 3\. Registre la salida
-
-# &nbsp;  - Placa: ABC123
-
-# &nbsp;  - Hora salida: 1030
-
-# &nbsp;  - Tiempo: 90 minutos
-
-# &nbsp;  - Total a pagar: $4,500
-
-# ```
-
-# 
-
-# \## 🛠️ Funcionalidades Principales
-
-# 
-
-# \### Sistema de Mensualidades
-
-# \- Vigencia de 30 días desde la fecha de registro
-
-# \- Exención automática de cobro para vehículos con mensualidad vigente
-
-# \- Control de fechas de vencimiento
-
-# 
-
-# \### Cálculo de Cobro
-
-# \- Cálculo automático de minutos transcurridos
-
-# \- Aplicación de tarifa según tipo de vehículo
-
-# \- Generación de factura detallada
-
-# 
-
-# \### Validaciones
-
-# \- Formato de placas según tipo de vehículo
-
-# \- Validación de fechas (día, mes, año)
-
-# \- Validación de horas (formato 24h)
-
-# \- Detección de placas duplicadas
-
-# \- Validación de hora de salida mayor a hora de entrada
-
-# 
-
-# \## 📊 Estructura de Datos
-
-# 
-
-# El sistema almacena:
-
-# \- Registro de vehículos con entrada/salida
-
-# \- Mensualidades activas
-
-# \- Facturas generadas
-
-# \- Tarifas configuradas
-
-# 
-
-# \## 👤 Autor
-
-# 
-
-# \*\*Santiago Marín\*\*
-
-# \- GitHub: \[@smarinx15](https://github.com/smarinx15)
-
-# 
-
-# \## 📄 Licencia
-
-# 
-
-# Este proyecto está bajo la Licencia MIT.
-
-# 
-
-# \## 🤝 Contribuciones
-
-# 
-
-# Las contribuciones son bienvenidas. Si deseas mejorar el proyecto:
-
-# 
-
-# 1\. Haz fork del repositorio
-
-# 2\. Crea una rama para tu mejora (`git checkout -b feature/mejora`)
-
-# 3\. Haz commit de tus cambios (`git commit -m 'Agrega nueva funcionalidad'`)
-
-# 4\. Haz push a la rama (`git push origin feature/mejora`)
-
-# 5\. Abre un Pull Request
-
-# 
-
-# \## 📞 Soporte
-
-# 
-
-# Si tienes preguntas o encuentras algún problema, abre un \[Issue](https://github.com/smarinx15/sistema-estacionamiento/issues) en GitHub.
-
-# 
-
-# ---
-
-# 
-
-# ⭐ Si este proyecto te fue útil, considera darle una estrella en GitHub
 
